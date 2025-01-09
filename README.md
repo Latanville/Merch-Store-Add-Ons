@@ -1,4 +1,4 @@
-<b><h1> Fourthwall Add-Ons require a Proxy Server! </b> </h1>
+<b><h1> Some Fourthwall Add-Ons require a Proxy Server! </b> </h1>
 
 <b><ul>Overview</b></ul>
 
