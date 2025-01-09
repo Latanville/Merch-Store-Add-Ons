@@ -1,0 +1,171 @@
+//Make a banner that scrolls your recent donations! :)
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scrolling Banner</title>
+    <style>
+        /* Basic styles for the banner */
+        .banner-container {
+            width: 100%; /* Ensure it fits within the viewport */
+            overflow: hidden;
+            background-color: #b90600; /* Hex colour code for banner BG */
+            padding: 5px 0;
+            margin-bottom: 20px; /* Use this number to adjust spacing between banner and other content */
+            position: relative;
+        }
+        .banner-content {
+            display: flex;
+            white-space: nowrap;
+            position: absolute;
+            will-change: transform; /* Optimize for smoother scrolling */
+        }
+        .banner-item {
+            margin-right: 100px;
+            font-size: 20px;
+            color: #eaeaea; /* Hex colour code for banner font */  
+            padding: 5px; /* Adjust padding as needed */
+        }
+
+        /* Additional styles for the rest of the page */
+        body {
+            font-family: Arvo, sans-serif; /* Adjust font family as needed */
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+                //examples of recommended fonts for CSS
+                //Arial, sans-serif;
+                //Verdana, sans-serif;
+                //Tahoma, sans-serif;
+                //Trebuchet MS, sans-serif;
+                //Times New Roman, serif;
+                //Georgia, serif;
+                //Garamond, serif;
+                //Courier New, monospace;
+                //Brush Script MT, cursive;
+
+        }
+        .page-content {
+            padding: 20px;
+            /* Add any additional styles for your main content */
+        }
+    </style>
+</head>
+<body>
+    <div class="page-content">
+        <h2>Thanks to the recent supporters!</h2> /* feel free to change this to your own quip*/
+        <!-- Scrolling Banner Container -->
+        <div class="banner-container">
+            <div class="banner-content" id="banner-content">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Function to fetch data from the API
+            async function fetchData() {
+            // MAKE SURE TO SET UP A PROXY SERVER TO HOST YOUR API! 
+            // DO NOT PLACE YOUR REAL API KEY HERE. THIS WILL BE VISIBLE IN THE METADATA!!!
+            const proxyEndpoint = 'https://your-proxy-server.com/fetch-donations';
+            try {
+                const response = await fetch(proxyEndpoint);
+                const data = await response.json();
+                updateBanner(data.results); // Assuming the proxy forwards only the necessary data
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+            }
+        }
+
+
+                try {
+                    const response = await fetch(apiEndpoint, {
+                        headers: {
+                            'Authorization': `Basic ${authString}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    updateBanner(data.results); // Assuming data.results is the array of orders
+                } catch (error) {
+                    console.error('Failed to fetch data:', error);
+                }
+            }
+
+            // Function to update the banner content
+            function updateBanner(data) {
+                const bannerContent = document.getElementById('banner-content');
+                bannerContent.innerHTML = ''; // Clear previous content
+
+                // Filter and map the data to create banner items
+                const items = data.filter(item => {
+                    const donationValue = item.amounts?.donation?.value || 0;
+                    const username = item.username || "Unknown";
+                    return donationValue >= 5 && username !== "Unknown";
+                }).map(item => {
+                    const donationValue = item.amounts.donation.value;
+                    const username = item.username;
+                    const bannerItem = document.createElement('div');
+                    bannerItem.className = 'banner-item';
+                    bannerItem.textContent = `${username} donated $${donationValue}`;
+                    return bannerItem;
+                });
+
+                // Append the items to the banner content
+                items.forEach(item => bannerContent.appendChild(item));
+                // Duplicate items for a seamless loop
+                items.forEach(item => bannerContent.appendChild(item.cloneNode(true))); 
+
+                startScrolling();
+            }
+
+            // Function to start the scrolling animation
+            function startScrolling() {
+                const bannerContent = document.getElementById('banner-content');
+                const bannerContainer = document.querySelector('.banner-container');
+                const containerWidth = bannerContainer.offsetWidth;
+
+                // Remove any existing animation
+                bannerContent.style.animation = 'none';
+                bannerContent.style.transform = `translateX(${containerWidth}px)`;
+
+                // Force reflow
+                bannerContent.offsetHeight;
+
+                // Calculate the total scroll width
+                const totalScrollWidth = bannerContent.scrollWidth;
+                const duration = (totalScrollWidth / containerWidth) * 30; // Adjust speed as needed
+
+                // Apply the animation
+                bannerContent.style.animation = `scroll ${duration}s linear infinite`;
+            }
+
+            // Add resize event listener to adjust on window resize
+            window.addEventListener('resize', startScrolling);
+
+            // Define the keyframes in JS for dynamic duration
+            const styleSheet = document.styleSheets[0];
+            styleSheet.insertRule(`
+                @keyframes scroll {
+                    from { transform: translateX(100%); }
+                    to { transform: translateX(-100%); }
+                }
+            `, styleSheet.cssRules.length);
+
+            // Fetch data and update the banner initially
+            fetchData();
+
+            // Set interval to update the banner periodically
+            setInterval(fetchData, 600000); // Play around with this number to suit your needs
+        });
+    </script>
+</body>
+</html>
