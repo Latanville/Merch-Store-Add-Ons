@@ -1,4 +1,6 @@
 //Make a banner that scrolls your recent donations! :)
+//To add this code to your site, navigate to the page you want the banner on. Click on "header" and click to enable CSS. 
+//Paste your code, paying careful attention to update the lines needed (75, your Proxy information) before doing so
 
 <!DOCTYPE html>
 <html lang="en">
